@@ -11,18 +11,27 @@ import com.rest.client.RestTemplateConfiguration;
 
 @Configuration
 public class RestTemplateConfigImpl implements RestTemplateConfiguration {
-	
+
 	@Autowired
 	HttpClient httpClient;
 
+	/*
+	 * ClientHttpRequestFactory consumes a configured client to setup pooling for
+	 * Spring's Rest Template.
+	 */
 	@Override
 	public ClientHttpRequestFactory clientHttpRequestFactory() {
-		HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = 
-										new HttpComponentsClientHttpRequestFactory();
+		HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
 		clientHttpRequestFactory.setHttpClient(httpClient);
 		return clientHttpRequestFactory();
 	}
 
+	/*
+	 * Spring MVC's RestTemplate doesn't use HTTP connection pooling of any kind,
+	 * and will establish and close a connection every time you make a REST call. To
+	 * use connection pooling, we need to provide another implementation of
+	 * ClientHttpRequestFactory.
+	 */
 	@Override
 	public RestTemplate restTemplate(ClientHttpRequestFactory clientHttpRequestFactory) {
 		return new RestTemplate(clientHttpRequestFactory);
